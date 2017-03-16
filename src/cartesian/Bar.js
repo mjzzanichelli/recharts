@@ -117,7 +117,7 @@ class Bar extends Component {
 
     const baseProps = getPresentationAttributes(this.props);
 
-    const animationProps = getAnimationAttributes(this.props)
+    const animationProps = getAnimationAttributes(this.props, this.handleAnimationStart, this.handleAnimationEnd)
 
     const getStyle = isBegin => ({
       transform: `scale${layout === 'vertical' ? 'X' : 'Y'}(${isBegin ? 0 : 1})`,
@@ -134,6 +134,7 @@ class Bar extends Component {
       };
 
       if (_.isNil(entry.value) || !animationProps.isAnimationActive) {
+
         return (
           <Animate
             isActive={false}
@@ -167,8 +168,8 @@ class Bar extends Component {
           from={getStyle(true)}
           to={getStyle(false)}
           key={`rectangle-${index}-${props.animationId}`}
-          onAnimationEnd={this.handleAnimationEnd}
-          onAnimationStart={this.handleAnimationStart}
+          onAnimationEnd={animationProps.onAnimationEnd}
+          onAnimationStart={animationProps.onAnimationStart}
         >
           <Layer
             className="recharts-bar-rectangle"

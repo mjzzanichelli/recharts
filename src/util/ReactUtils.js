@@ -126,17 +126,18 @@ export const getDisplayName = (Comp) => {
  * @param  {Object} props Specified properties
  * @return {Object}      Animation attributes
  */
-export const getAnimationAttributes = (props = {}) => {
+export const getAnimationAttributes = (props = {}, onAnimationStart, onAnimationEnd) => {
   let { isAnimationActive, isInitialAnimationActive, isUpdateAnimationActive,
-    animationBegin, animationDuration, animationEasing, animationId } = props;
+    animationBegin, animationDuration, animationEasing,
+    animationId
+  } = props;
 
   isAnimationActive = isUpdateAnimationActive ? false : isAnimationActive;
   isAnimationActive = isInitialAnimationActive && !animationId ? true : isAnimationActive;
 
-  // isUpdateAnimationActive = isUpdateAnimationActive && !animationId ? false : true;
-
   return {
     isAnimationActive, isInitialAnimationActive, isUpdateAnimationActive,
+    onAnimationStart, onAnimationEnd,
     animationBegin, animationDuration, animationEasing, animationId,
   }
 };

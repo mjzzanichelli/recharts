@@ -21,7 +21,7 @@ export default class Animations extends React.Component {
   displayName = 'BarChartDemo'
   state = initilaState
 
-  handleChangeData() {
+  handleChangeData = () => {
     this.setState(() => _.mapValues(initilaState, changeNumberOfData));
   }
 
@@ -41,7 +41,7 @@ export default class Animations extends React.Component {
         <a
           href="javascript: void(0);"
           className="btn update"
-          onClick={this.handleChangeData.bind(this)}
+          onClick={this.handleChangeData}
         >
           change data
         </a>
@@ -64,11 +64,13 @@ export default class Animations extends React.Component {
               fill="#00FF00"
               maxBarSize={15}
               isAnimationActive={true}
+
             />
             <Bar
               dataKey="uv"
               fill="#0000FF"
               isUpdateAnimationActive={true}
+
             />
             <Bar
               dataKey="uv"
@@ -77,6 +79,8 @@ export default class Animations extends React.Component {
               animationDuration={500}
               isUpdateAnimationActive={true}
               isInitialAnimationActive={true}
+              onAnimationStart={this.handleBarAnimationStart}
+              onAnimationEnd={this.handleBarAnimationEnd}
             />
             <Tooltip />
           </BarChart>

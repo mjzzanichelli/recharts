@@ -89,6 +89,8 @@ class Rectangle extends Component {
     animationBegin: PropTypes.number,
     animationDuration: PropTypes.number,
     animationEasing: PropTypes.oneOf(['ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear']),
+    onAnimationStart: PropTypes.func,
+    onAnimationEnd: PropTypes.func,
   };
 
   static defaultProps = {
@@ -105,6 +107,8 @@ class Rectangle extends Component {
     animationBegin: 0,
     animationDuration: 1500,
     animationEasing: 'ease',
+    onAnimationStart: () => { },
+    onAnimationEnd: () => { },
   };
 
   state = {
@@ -124,6 +128,14 @@ class Rectangle extends Component {
     }
 
   }
+
+  handleAnimationEnd = () => {
+    this.props.onAnimationEnd();
+  };
+
+  handleAnimationStart = () => {
+    this.props.onAnimationStart();
+  };
 
   render() {
     const { x, y, width, height, radius, className } = this.props;
@@ -154,6 +166,8 @@ class Rectangle extends Component {
         duration={animationDuration}
         animationEasing={animationEasing}
         isActive={isUpdateAnimationActive}
+        onAnimationStart={this.handleAnimationStart}
+        onAnimationEnd={this.handleAnimationEnd}
       >
         {
           ({ width: currWidth, height: currHeight, x: currX, y: currY }) => (
