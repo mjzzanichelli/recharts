@@ -25,6 +25,7 @@ import Treemap from './Treemap';
 import Sankey from './Sankey';
 
 import ResponsiveContainer from './ResponsiveContainer';
+import Animations from './Animations';
 
 export default {
   chartWrapper: {
@@ -66,5 +67,6 @@ export default {
 
   other: {
     ResponsiveContainer,
+    Animations,
   }
 };

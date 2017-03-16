@@ -11,8 +11,10 @@ import Text from '../component/Text';
 import ErrorBar from './ErrorBar';
 import pureRender from '../util/PureRender';
 import { getValueByDataKey, uniqueId } from '../util/DataUtils';
-import { PRESENTATION_ATTRIBUTES, EVENT_ATTRIBUTES, getPresentationAttributes,
-  filterEventsOfChild, isSsr, findChildByType } from '../util/ReactUtils';
+import {
+  PRESENTATION_ATTRIBUTES, EVENT_ATTRIBUTES, getPresentationAttributes,
+  filterEventsOfChild, isSsr, findChildByType, getAnimationAttributes
+} from '../util/ReactUtils';
 
 @pureRender
 class Bar extends Component {
@@ -57,6 +59,8 @@ class Bar extends Component {
 
     animationId: PropTypes.number,
     isAnimationActive: PropTypes.bool,
+    isInitialAnimationActive: PropTypes.bool,
+    isUpdateAnimationActive: PropTypes.bool,
     animationBegin: PropTypes.number,
     animationDuration: PropTypes.number,
     animationEasing: PropTypes.oneOf(['ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear']),
@@ -71,12 +75,14 @@ class Bar extends Component {
     data: [],
     layout: 'vertical',
     isAnimationActive: !isSsr(),
+    isInitialAnimationActive: false,
+    isUpdateAnimationActive: false,
     animationBegin: 0,
     animationDuration: 1500,
     animationEasing: 'ease',
 
-    onAnimationStart: () => {},
-    onAnimationEnd: () => {},
+    onAnimationStart: () => { },
+    onAnimationEnd: () => { },
   };
 
   state = { isAnimationFinished: false };
@@ -107,26 +113,40 @@ class Bar extends Component {
   }
 
   renderRectangles() {
-    const { data, shape, layout, isAnimationActive, animationBegin,
-      animationDuration, animationEasing, animationId } = this.props;
+    const { data, shape, layout } = this.props;
+
     const baseProps = getPresentationAttributes(this.props);
+
+    const animationProps = getAnimationAttributes(this.props)
+
     const getStyle = isBegin => ({
       transform: `scale${layout === 'vertical' ? 'X' : 'Y'}(${isBegin ? 0 : 1})`,
     });
 
     return data.map((entry, index) => {
       const { x, y, width, height } = entry;
-      const props = { ...baseProps, ...entry, index };
 
-      if (_.isNil(entry.value) || !isAnimationActive) {
+      const props = {
+        ...baseProps,
+        ...entry,
+        ...animationProps,
+        index,
+      };
+
+      if (_.isNil(entry.value) || !animationProps.isAnimationActive) {
         return (
-          <Layer
-            className="recharts-bar-rectangle"
-            {...filterEventsOfChild(this.props, entry, index)}
-            key={`rectangle-${index}`}
+          <Animate
+            isActive={false}
+            key={`rectangle-${index}${animationProps.isUpdateAnimationActive ? '-0' : ''}`}
           >
-            {this.renderRectangle(shape, props)}
-          </Layer>
+            <Layer
+              className="recharts-bar-rectangle"
+              {...filterEventsOfChild(this.props, entry, index) }
+              key={`rectangle-${index}`}
+            >
+              {this.renderRectangle(shape, props)}
+            </Layer>
+          </Animate>
         );
       }
 
@@ -140,20 +160,20 @@ class Bar extends Component {
 
       return (
         <Animate
-          begin={animationBegin}
-          duration={animationDuration}
-          isActive={isAnimationActive}
-          easing={animationEasing}
+          begin={animationProps.animationBegin}
+          duration={animationProps.animationDuration}
+          isActive={animationProps.isAnimationActive}
+          easing={animationProps.animationEasing}
           from={getStyle(true)}
           to={getStyle(false)}
-          key={`rectangle-${index}-${animationId}`}
+          key={`rectangle-${index}-${props.animationId}`}
           onAnimationEnd={this.handleAnimationEnd}
           onAnimationStart={this.handleAnimationStart}
         >
           <Layer
             className="recharts-bar-rectangle"
             style={translateStyle({ transformOrigin })}
-            {...filterEventsOfChild(this.props, entry, index)}
+            {...filterEventsOfChild(this.props, entry, index) }
             key={`rectangle-${index}`}
           >
             {this.renderRectangle(shape, props)}

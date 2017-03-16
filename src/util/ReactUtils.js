@@ -121,6 +121,26 @@ export const getDisplayName = (Comp) => {
   return Comp.displayName || Comp.name || 'Component';
 };
 
+/**
+ * Get the display name of a component
+ * @param  {Object} props Specified properties
+ * @return {Object}      Animation attributes
+ */
+export const getAnimationAttributes = (props = {}) => {
+  let { isAnimationActive, isInitialAnimationActive, isUpdateAnimationActive,
+    animationBegin, animationDuration, animationEasing, animationId } = props;
+
+  isAnimationActive = isUpdateAnimationActive ? false : isAnimationActive;
+  isAnimationActive = isInitialAnimationActive && !animationId ? true : isAnimationActive;
+
+  // isUpdateAnimationActive = isUpdateAnimationActive && !animationId ? false : true;
+
+  return {
+    isAnimationActive, isInitialAnimationActive, isUpdateAnimationActive,
+    animationBegin, animationDuration, animationEasing, animationId,
+  }
+};
+
 /*
  * Find and return all matched children by type. `type` can be a React element class or
  * string
